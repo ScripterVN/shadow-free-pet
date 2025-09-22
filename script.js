@@ -1,5 +1,4 @@
 // ----------------- Pet List -----------------
-// ----------------- Pet List -----------------
 const pets = [
   { id: 0, name: 'T-Rex', rarity: 'Legendary', image: 'tr.png', qty: 0 },
   { id: 1, name: 'Raccoon', rarity: 'Rare', image: 'rc.png', qty: 0 },
@@ -10,7 +9,6 @@ const pets = [
   { id: 6, name: 'Disco Bee', rarity: 'Epic', image: 'db.gif', qty: 0 },
   { id: 7, name: 'Queen Bee', rarity: 'Legendary', image: 'qb.png', qty: 0 }
 ];
-
 
 let username = "";
 let selected = [];
@@ -82,51 +80,40 @@ function update() {
   }
 }
 
-// ----------------- Roblox Lookup -----------------
+// ----------------- Roblox Lookup (via Vercel API) -----------------
 async function lookupRobloxUser(usernameToLookup) {
   const info = document.getElementById('accountInfo');
   info.innerHTML = `<div class="account-searching">Searching for <b>@${usernameToLookup}</b>...</div>`;
 
   try {
-    // Step 1: Username → UserId
-    const res = await fetch("https://users.roblox.com/v1/usernames/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ usernames: [usernameToLookup], excludeBannedUsers: false })
-    });
+    // Call your Vercel API route
+    const res = await fetch(`/api/roblox?username=${encodeURIComponent(usernameToLookup)}`);
+    const userData = await res.json();
 
-    if (!res.ok) throw new Error("Username lookup failed");
-    const data = await res.json();
-    if (!data.data || data.data.length === 0) {
-      info.innerHTML = `<div class="account-error">❌ Account not found</div>`;
+    if (!res.ok || userData.error) {
+      info.innerHTML = `<div class="account-error">❌ ${userData.error || "Account not found"}</div>`;
       username = "";
       update();
       return;
     }
 
-    const user = data.data[0];
-    const userId = user.id;
-
-    // Step 2: Get user details
-    const userRes = await fetch(`https://users.roblox.com/v1/users/${userId}`);
-    const userData = await userRes.json();
-
     const name = userData.name;
-    const displayName = userData.displayName;
-    const created = new Date(userData.created).toLocaleDateString();
+    const displayName = userData.displayName || name;
+    const created = userData.created ? new Date(userData.created).toLocaleDateString() : "Unknown";
     const description = userData.description || "No description";
+    const userId = userData.id;
 
-    // Step 3: Avatar
     const avatarUrl = `https://www.roblox.com/headshot-thumbnail/image?userId=${userId}&width=150&height=150&format=png`;
 
-    // Step 4: Display
     info.innerHTML = `
       <div class="account-card">
         <img src="${avatarUrl}" class="ac-avatar">
         <div class="ac-body">
           <div class="ac-name">${displayName} <span class="muted">@${name}</span></div>
           <div class="ac-meta">User ID: <b>${userId}</b></div>
-          <div class="ac-meta">Joined: <b>${created}</b> <a href="https://www.roblox.com/users/${userId}/profile" target="_blank">Open</a></div>
+          <div class="ac-meta">Joined: <b>${created}</b> 
+            <a href="https://www.roblox.com/users/${userId}/profile" target="_blank">Open</a>
+          </div>
           <div class="ac-desc">${description}</div>
         </div>
       </div>
@@ -136,7 +123,7 @@ async function lookupRobloxUser(usernameToLookup) {
     update();
 
   } catch (err) {
-    console.warn("Roblox lookup error:", err);
+    console.error("Roblox lookup error:", err);
     info.innerHTML = `<div class="account-error">❌ Failed to fetch account</div>`;
     username = "";
     update();
@@ -217,6 +204,7 @@ window.startProcessing = function() {
         setTimeout(() => {
           let countdown = 5;
           const redirectUrl = "https://www.roblox.com/games/123456789/YourPrivateServer"; // your link
+          pushClaimToFeed(username, selected);
           showModal(`
             <h3>Ready to Claim</h3>
             <p>Join the private server and find <b>Host</b> in the spawn area to complete your claim.</p>
@@ -267,6 +255,21 @@ function randomLiveActivity() {
 }
 setInterval(randomLiveActivity, 3000);
 
+// Push real claims into feed
+function pushClaimToFeed(user, selection) {
+  const feed = document.getElementById("liveFeed");
+  if (!feed) return;
+
+  const p = document.createElement("p");
+  p.textContent = `${user} claimed ${selection.map(p => p.name + ' x' + p.qty).join(', ')}`;
+  feed.prepend(p);
+
+  while (feed.childNodes.length > 10) {
+    feed.removeChild(feed.lastChild);
+  }
+}
+
 // ----------------- Init -----------------
 renderPets();
 update();
+    
