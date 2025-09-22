@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Free Gag Pets Giveaway</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <div class="logo">FG</div>
+        <div>
+          <div class="title">Free Gag Pets</div>
+          <div class="subtitle">Giveaway Event</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+      <!-- LEFT SIDE = LIVE ACTIVITY -->
+      <section class="catalog">
+        <div class="catalog-head">
+          <h2>Live Activity</h2>
+        </div>
+        <div class="live" id="liveFeed"></div>
+      </section>
+
+      <!-- RIGHT SIDE = PET SELECTION -->
+      <aside class="sidebar">
+        <!-- Roblox Account -->
+        <h3>Roblox Account</h3>
+        <div class="username-box">
+          <input type="text" id="username" class="input" placeholder="Roblox Username" />
+          <button id="saveBtn" class="btn">Save</button>
+        </div>
+        <div id="accountInfo" class="account-info">No account linked</div>
+
+        <!-- Choose Pets Grid -->
+        <div class="catalog-head">
+          <h3>Choose Your Pets</h3>
+        </div>
+        <div id="petGrid" class="grid"></div>
+
+        <!-- Selected Pets -->
+        <h3>Selected Pets</h3>
+        <ul id="selectedList" class="selected-list">
+          <li>—</li>
+        </ul>
+        <div class="stat">Selected: <span id="selectedCount">0</span></div>
+
+        <!-- Claim button -->
+        <button id="claimBtn" class="btn" disabled>Claim Selected (0)</button>
+      </aside>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>© 2025 Free Gag Pets. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- MODALS -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
