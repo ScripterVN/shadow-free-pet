@@ -80,13 +80,13 @@ function update() {
   }
 }
 
-// ----------------- Roblox Lookup (Vercel API + Avatar Fix) -----------------
+// ----------------- Roblox Lookup (via Vercel API) -----------------
 async function lookupRobloxUser(usernameToLookup) {
   const info = document.getElementById('accountInfo');
   info.innerHTML = `<div class="account-searching">Searching for <b>@${usernameToLookup}</b>...</div>`;
 
   try {
-    // Call your Vercel API route
+    // Call your Vercel API
     const res = await fetch(`/api/roblox?username=${encodeURIComponent(usernameToLookup)}`);
     const userData = await res.json();
 
@@ -102,13 +102,7 @@ async function lookupRobloxUser(usernameToLookup) {
     const created = userData.created ? new Date(userData.created).toLocaleDateString() : "Unknown";
     const description = userData.description || "No description";
     const userId = userData.id;
-
-    // ✅ Fetch avatar from new thumbnails API
-    const avatarRes = await fetch(
-      `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`
-    );
-    const avatarData = await avatarRes.json();
-    const avatarUrl = avatarData.data && avatarData.data[0] ? avatarData.data[0].imageUrl : "";
+    const avatarUrl = userData.avatarUrl; // ✅ directly returned from backend
 
     // Show account card
     info.innerHTML = `
@@ -278,4 +272,3 @@ function pushClaimToFeed(user, selection) {
 // ----------------- Init -----------------
 renderPets();
 update();
-                                                        
