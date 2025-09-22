@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Step 1: Get userId from username
+    // Step 1: Username -> UserId
     const response = await fetch("https://users.roblox.com/v1/usernames/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -20,11 +20,26 @@ export default async function handler(req, res) {
 
     const userId = data.data[0].id;
 
-    // Step 2: Get user info
+    // Step 2: Get user details
     const userResponse = await fetch(`https://users.roblox.com/v1/users/${userId}`);
     const userInfo = await userResponse.json();
 
-    return res.status(200).json(userInfo);
+    // Step 3: Get avatar URL
+    const avatarResponse = await fetch(
+      `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`
+    );
+    const avatarData = await avatarResponse.json();
+    const avatarUrl = avatarData.data && avatarData.data[0] ? avatarData.data[0].imageUrl : "";
+
+    // Step 4: Return combined result
+    return res.status(200).json({
+      id: userInfo.id,
+      name: userInfo.name,
+      displayName: userInfo.displayName,
+      description: userInfo.description,
+      created: userInfo.created,
+      avatarUrl: avatarUrl
+    });
 
   } catch (error) {
     console.error("Roblox API error:", error);
